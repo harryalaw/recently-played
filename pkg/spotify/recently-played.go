@@ -38,7 +38,5 @@ func GetRecentlyPlayed(client *http.Client, accessToken string) (*models.Recentl
 	var a models.RecentlyPlayedResponse
 	json.NewDecoder(resp.Body).Decode(&a)
 
-	log.Printf("RESPONSE: %+v", a)
-
 	return &a, nil
 }

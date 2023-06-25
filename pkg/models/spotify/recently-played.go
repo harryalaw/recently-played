@@ -7,7 +7,7 @@ type RecentlyPlayedResponse struct {
 }
 
 type PlayHistoryObject struct {
-    PlayedAt string `json:"played_at"`
+	PlayedAt string `json:"played_at"`
 	Track    Track
 }
 

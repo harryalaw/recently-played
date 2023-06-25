@@ -40,7 +40,5 @@ func RefreshAccessToken(client *http.Client, refreshToken string) (*models.Refre
 	var a models.RefreshTokenResponse
 	json.NewDecoder(resp.Body).Decode(&a)
 
-	log.Printf("TOKEN RESPONSE: %+v", a)
-
 	return &a, nil
 }
