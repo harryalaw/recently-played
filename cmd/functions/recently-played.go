@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,9 +9,8 @@ import (
 
 	runtime "github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-lambda-go/lambdacontext"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/harryalaw/recently-played/pkg/models/entities"
 	models "github.com/harryalaw/recently-played/pkg/models/spotify"
+	"github.com/harryalaw/recently-played/pkg/repository"
 	"github.com/harryalaw/recently-played/pkg/spotify"
 )
 
@@ -38,39 +36,7 @@ func getRecentlyPlayed(accessToken string) (*models.RecentlyPlayedResponse, erro
 }
 
 func persistData(data *models.RecentlyPlayedResponse, userId int) error {
-	db, err := sql.Open("mysql", os.Getenv("DSN"))
-
-	if err != nil {
-		log.Fatalf("Failed to connect: %v", err)
-	}
-
-	defer db.Close()
-
-	entities := entities.RecentlyPlayedList(data, userId)
-
-	log.Printf("Inserting %d tracks", len(entities))
-
-	// todo: Update db schema to have href instead of uri
-	queryString := `INSERT into recently_played_tracks
-    (user_id, played_at, uri)
-    VALUES `
-
-	numOfFields := 3
-
-	params := make([]interface{}, len(entities)*numOfFields)
-	for i, e := range entities {
-		pos := i * numOfFields
-		params[pos+0] = e.UserId
-		params[pos+1] = e.PlayedAt
-		params[pos+2] = e.Href
-
-		queryString += `(?, ?, ?),`
-	}
-
-	queryString = queryString[:len(queryString)-1] // drop last comma
-
-	_, err = db.Exec(queryString, params...)
-	return err
+	return repository.PersistTracks(data, userId)
 }
 
 func callLambda(id int) (string, error) {
