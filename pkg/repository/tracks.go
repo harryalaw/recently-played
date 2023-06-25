@@ -31,6 +31,11 @@ func PersistTracks(data *models.RecentlyPlayedResponse, userId int) error {
 	entities = filterEntities(entities, timestamp)
 	log.Printf("Inserting %d tracks", len(entities))
 
+    if len(entities) == 0 {
+        log.Printf("No new plays")
+        return nil
+    }
+
 	// todo: Update db schema to have href instead of uri
 	queryString := `INSERT into recently_played_tracks
     (user_id, played_at, uri)

@@ -31,7 +31,7 @@ func getRecentlyPlayed(accessToken string) (*models.RecentlyPlayedResponse, erro
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Recently Played tracks: %+v", res)
+	log.Printf("Recently Played tracks call succeeded: %d items retrieved", len(res.Items))
 	return res, nil
 }
 
