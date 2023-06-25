@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/harryalaw/recently-played/pkg/models/entities"
 	"github.com/harryalaw/recently-played/pkg/spotify"
 	"github.com/joho/godotenv"
 )
@@ -19,6 +20,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+    data, err := spotify.GetRecentlyPlayed(client, token.AccessToken)
 
-	fmt.Printf("%+v", token)
+
+    entities := entities.RecentlyPlayedList(data, 2)
+    fmt.Printf("%+v", entities);
 }

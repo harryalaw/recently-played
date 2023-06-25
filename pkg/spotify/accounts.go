@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/harryalaw/recently-played/pkg/models"
+	models "github.com/harryalaw/recently-played/pkg/models/spotify"
 )
 
 const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token"
