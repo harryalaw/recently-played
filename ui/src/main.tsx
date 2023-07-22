@@ -9,10 +9,12 @@ import {
   RootRoute,
 } from "@tanstack/router";
 import {
-  finalisedAuthRoute,
+  dashboardAuthRoute,
   initiateAuthRoute,
   receiveAuthRoute,
 } from "./auth/pkce-flow";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Create a root route
 export const rootRoute = new RootRoute({
@@ -64,7 +66,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   aboutRoute,
   receiveAuthRoute,
-  finalisedAuthRoute,
+  dashboardAuthRoute,
   initiateAuthRoute,
 ]);
 
@@ -78,13 +80,18 @@ declare module "@tanstack/router" {
   }
 }
 
+const queryClient = new QueryClient();
+
 // Render our app!
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </StrictMode>,
   );
 }
