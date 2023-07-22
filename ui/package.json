@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^4.32.0",
+    "@tanstack/react-query-devtools": "^4.32.0",
     "@tanstack/router": "0.0.1-beta.111",
     "prettier": "^3.0.0",
     "react": "^18.2.0",
