@@ -30,6 +30,9 @@ function Root() {
       <div>
         <Link to="/initiate">Login</Link>
       </div>
+      <div>
+        <Link to="/dashboard">Dashboard</Link>
+      </div>
       <hr />
       <Outlet />
     </>

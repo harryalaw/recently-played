@@ -1,21 +1,8 @@
-/*
- *
- * What do I want to do here?
- * I want to get all of the data from the DB, then in the UI I want to get the relevant spotify data
- *
- * The boring way is to just get the tracks in batches
- *  -> I think to rethink this we would need to store artist/album data instead to more easily batch on that
- *
- *  -> Just show a list of track IDs to start with
- *
- *
- */
-
 import { useQuery } from "@tanstack/react-query";
-import { TsvData } from "./parse-local-data";
 import { usePlayedCounts } from "./use-played-counts";
+import { TsvData } from "./parse-local-data";
 
-export function RecentlyPlayed() {
+export function RecentlyPlayedDashboard() {
   const { isLoading, isError, data, error } = usePlayedCounts("2");
   if (isLoading) {
     return <div> Loading ... </div>;
@@ -25,11 +12,30 @@ export function RecentlyPlayed() {
     return <div> Error! </div>;
   }
 
-  return <PlayedList hrefs={data.map((el) => el.href)} />;
+  return <PlayedList trackData={data} />;
 }
 
-function PlayedList(props: { hrefs: string[] }) {
-  const { isLoading, isError, data, error } = useSpotifyTrackData(props.hrefs);
+function groupByDate(trackData: TrackData[]): Record<string, TrackData[]> {
+  const dateMap: Record<string, TrackData[]> = {};
+
+  for (const track of trackData) {
+    const date = track.date.toDateString();
+    const tracks = dateMap[date] ?? [];
+    tracks.push(track);
+    dateMap[date] = tracks;
+  }
+
+  for (const [_date, tracks] of Object.entries(dateMap)) {
+    tracks.sort((a, b) => b.date.getTime() - a.date.getTime());
+  }
+
+  return dateMap;
+}
+
+function PlayedList(props: { trackData: TsvData[] }) {
+  const { isLoading, isError, data, error } = useSpotifyTrackData(
+    props.trackData,
+  );
 
   if (isLoading) {
     return <div> Loading ... </div>;
@@ -39,33 +45,94 @@ function PlayedList(props: { hrefs: string[] }) {
     return <div> Error! </div>;
   }
 
+  const groupedByDate = groupByDate(data);
+  const days = Object.entries(groupedByDate).sort((a, b) => {
+            const dateA = new Date(a[0])
+            const dateB = new Date(b[0])
+            return dateB.getTime() - dateA.getTime()
+      }
+  );
+
   return (
-    <ol>
-      {data.map((track, id) => {
-        console.log(track, id);
-        if (track !== undefined) {
-          return (
-            <li key={id}>
-              {track.name}
-              {track.artists.map((artist) => artist.name).join(" ")}
-              {track.album.name}
-            </li>
-          );
-        }
+    <div>
+      {days.map(([day, tracks]) => {
+        return (
+          <div>
+            <div style={{position: 'sticky', top:'0'}}
+            >{day}</div>
+            {tracks.map((track) => {
+              return (
+                <TrackDetails trackData={track} key={track.date.getTime()} />
+              );
+            })}
+          </div>
+        );
       })}
-    </ol>
+    </div>
   );
 }
 
-function useSpotifyTrackData(hrefs: string[]) {
+function msToMinuteSeconds(ms: number): string {
+  const inSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(inSeconds / 60);
+  const seconds = inSeconds % 60;
+
+  return `${minutes}:${padTime(seconds)}`;
+}
+
+function padTime(time: number): string {
+  return String(time).padStart(2, "0");
+}
+
+function TrackDetails(props: { trackData: TrackData }) {
+  const { track, date } = props.trackData;
+
+  return (
+    <div
+      role="row"
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: "1em",
+      }}
+    >
+      <div>{`${padTime(date.getHours())}:${padTime(date.getMinutes())}`}</div>
+      <div>
+        {
+          <img
+            src={track.album.images[2].url}
+            alt={`Album artwork for ${track.album.name}`}
+          />
+        }
+      </div>
+      <div>
+        <p>{track.name}</p>
+        <p>{track.artists.map((artist) => artist.name).join(", ")}</p>
+      </div>
+      <div style={{ marginLeft: 0 }}>
+        <p>{msToMinuteSeconds(track.duration_ms ?? 0)}</p>
+      </div>
+    </div>
+  );
+}
+
+function useSpotifyTrackData(trackData: TsvData[]) {
   return useQuery({
     queryKey: ["tracks"],
-    queryFn: () => getSpotifyTrackData(hrefs),
+    queryFn: () => getSpotifyTrackData(trackData),
     staleTime: Infinity,
   });
 }
 
-async function getSpotifyTrackData(hrefs: string[]) {
+type TrackData = {
+  track: TrackInfo;
+  date: Date;
+};
+
+async function getSpotifyTrackData(trackData: TsvData[]): Promise<TrackData[]> {
+  const hrefs = trackData.map((track) => track.href);
+
   const uniqueHrefs = getUnique(hrefs);
   const trackIds = uniqueHrefs.map((href) => href.split("/")[5]);
 
@@ -89,9 +156,14 @@ async function getSpotifyTrackData(hrefs: string[]) {
 
   console.log(trackInfo);
 
-  const data = hrefs
-    .map((href) => href.split("/")[5])
-    .map((trackId) => trackInfo[trackId]);
+  const data = trackData.map((data) => {
+    const trackId = data.href.split("/")[5];
+    const spotifyTrackData = trackInfo[trackId];
+    return {
+      track: spotifyTrackData,
+      date: data.date,
+    };
+  });
 
   return data;
 }

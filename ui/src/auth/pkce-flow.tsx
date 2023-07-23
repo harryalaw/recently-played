@@ -2,7 +2,7 @@ import { Route } from "@tanstack/router";
 import { rootRoute } from "../main";
 import { SpotifyStartAuth, SpotifyAuth } from "./AuthComponents";
 import { z } from "zod";
-import { RecentlyPlayed } from "../recently-played/RecentlyPlayed";
+import { RecentlyPlayedDashboard } from "../recently-played/RecentlyPlayed";
 
 const VALID_CHARS =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -57,8 +57,9 @@ export const receiveAuthRoute = new Route({
   component: SpotifyAuth,
   validateSearch: spotifyAuthSchema,
 });
+
 export const dashboardAuthRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
-  component: RecentlyPlayed,
+  component: RecentlyPlayedDashboard,
 });
