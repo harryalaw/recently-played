@@ -47,19 +47,28 @@ function PlayedList(props: { trackData: TsvData[] }) {
 
   const groupedByDate = groupByDate(data);
   const days = Object.entries(groupedByDate).sort((a, b) => {
-            const dateA = new Date(a[0])
-            const dateB = new Date(b[0])
-            return dateB.getTime() - dateA.getTime()
-      }
-  );
+    const dateA = new Date(a[0]);
+    const dateB = new Date(b[0]);
+    return dateB.getTime() - dateA.getTime();
+  });
 
   return (
     <div>
       {days.map(([day, tracks]) => {
         return (
           <div>
-            <div style={{position: 'sticky', top:'0'}}
-            >{day}</div>
+            <div
+              style={{
+                position: "sticky",
+                top: "0",
+                background: "black",
+                color: "white",
+                fontSize: '1.5rem',
+                padding: '1rem'
+              }}
+            >
+              {day}
+            </div>
             {tracks.map((track) => {
               return (
                 <TrackDetails trackData={track} key={track.date.getTime()} />
@@ -95,6 +104,7 @@ function TrackDetails(props: { trackData: TrackData }) {
         flexDirection: "row",
         alignItems: "center",
         gap: "1em",
+        maxWidth: 800,
       }}
     >
       <div>{`${padTime(date.getHours())}:${padTime(date.getMinutes())}`}</div>
@@ -110,7 +120,7 @@ function TrackDetails(props: { trackData: TrackData }) {
         <p>{track.name}</p>
         <p>{track.artists.map((artist) => artist.name).join(", ")}</p>
       </div>
-      <div style={{ marginLeft: 0 }}>
+      <div style={{ marginLeft: "auto" }}>
         <p>{msToMinuteSeconds(track.duration_ms ?? 0)}</p>
       </div>
     </div>
