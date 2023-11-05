@@ -12,6 +12,12 @@ type PlayHistoryObject struct {
 }
 
 type Track struct {
-	Href string
-	Uri  string
+	Href  string
+	Uri   string
+	Album Album
+	Id    string
+}
+
+type Album struct {
+	Id string
 }
