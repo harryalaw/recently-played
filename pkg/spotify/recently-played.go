@@ -8,8 +8,6 @@ import (
 	models "github.com/harryalaw/recently-played/pkg/models/spotify"
 )
 
-const SPOTIFY_API_URL = "https://api.spotify.com/v1"
-
 const RECENTLY_PLAYED_URL = SPOTIFY_API_URL + "/me/player/recently-played?limit=50"
 
 func GetRecentlyPlayed(client *http.Client, accessToken string) (*models.RecentlyPlayedResponse, error) {
