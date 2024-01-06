@@ -23,7 +23,7 @@ func GetPlaylist(client *http.Client, accessToken, playlistId string, offset int
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Print("Request for recently-played failed: ", err.Error())
+		log.Print("Request for playlist failed: ", err.Error())
 		return nil, err
 	}
 
@@ -55,7 +55,7 @@ func GetNextPlaylist(client *http.Client, accessToken, nextUrl string) (*models.
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Print("Request for recently-played failed: ", err.Error())
+		log.Print("Request for playlist failed: ", err.Error())
 		return nil, err
 	}
 
