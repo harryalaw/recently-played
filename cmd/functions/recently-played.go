@@ -17,8 +17,6 @@ import (
 var client = &http.Client{}
 
 func getAccessToken(id int) (string, error) {
-	// get the refresh token from db.
-	// get the access token from spotify;
 	token, error := spotify.RefreshAccessToken(client, os.Getenv("SPOTIFY_REFRESH_TOKEN"))
 
 	return token.AccessToken, error
