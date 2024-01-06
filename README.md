@@ -16,3 +16,10 @@ In order to backup my song of the day playlist (going back to 2019) in case I ev
 
 ### Visualisations
 Currently working on a UI to visualise this information.
+
+### Requirements
+Need to create a Spotify Developer account and create an application. The `CLIENT_ID` and `CLIENT_SECRET` can then be used to go through their consent flow to obtain an `ACCESS_TOKEN` and `REFRESH_TOKEN` to interact with their API. Take the `REFRESH_TOKEN` and store it in the .env file along with the `CLIENT_ID` and `CLIENT_SECRET`
+
+To persist the data you will also need to provide the DSN for the database connection.
+
+In order to use the functionality to copy a playlist you will also need the playlist ID.
