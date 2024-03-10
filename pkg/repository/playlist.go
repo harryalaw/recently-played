@@ -8,10 +8,11 @@ import (
 
 	"github.com/harryalaw/recently-played/pkg/models/entities"
 	models "github.com/harryalaw/recently-played/pkg/models/spotify"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 func PersistPlaylistTracks(data []models.PlaylistObject, offset int) error {
-	db, err := sql.Open("mysql", os.Getenv("DSN"))
+	db, err := sql.Open("libsql", os.Getenv("DSN"))
 
 	if err != nil {
 		log.Fatalf("Failed to connect: %+v", err)
