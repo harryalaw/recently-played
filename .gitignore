@@ -22,4 +22,8 @@ go.work
 
 .env
 .env.test
+.env.dev
 /build
+
+node_modules
+.sst

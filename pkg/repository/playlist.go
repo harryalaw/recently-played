@@ -11,6 +11,28 @@ import (
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
+func GetNextIndex() (int, error) {
+	db, err := sql.Open("libsql", os.Getenv("DSN"))
+	if err != nil {
+		log.Fatalf("Failed to connect: %+v", err)
+	}
+
+	defer db.Close()
+
+	var offset int
+	row := db.QueryRow("SELECT id FROM song_of_the_day order by ID desc LIMIT 1")
+	err = row.Scan(&offset)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, fmt.Errorf("no rows found %+v", err)
+		}
+		return 0, fmt.Errorf("error getting next index")
+	}
+
+    return offset, nil
+}
+
 func PersistPlaylistTracks(data []models.PlaylistObject, offset int) error {
 	db, err := sql.Open("libsql", os.Getenv("DSN"))
 
@@ -48,5 +70,9 @@ func PersistPlaylistTracks(data []models.PlaylistObject, offset int) error {
 	queryString = queryString[:len(queryString)-1] // drop last comma
 
 	_, err = db.Exec(queryString, params...)
+	if err != nil {
+		log.Printf("Error persisting tracks: %+v", err)
+		return err
+	}
 	return nil
 }

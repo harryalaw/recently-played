@@ -39,6 +39,8 @@ func GetPlaylist(client *http.Client, accessToken, playlistId string, offset int
 	var a models.PlaylistResponse
 	json.NewDecoder(resp.Body).Decode(&a)
 
+	log.Print(a)
+
 	return &a, nil
 
 }

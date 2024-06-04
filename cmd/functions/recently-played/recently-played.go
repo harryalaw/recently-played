@@ -16,11 +16,10 @@ import (
 
 var client = &http.Client{}
 
-func getAccessToken(id int) (string, error) {
+func getAccessToken() (string, error) {
 	token, error := spotify.RefreshAccessToken(client, os.Getenv("SPOTIFY_REFRESH_TOKEN"))
 
 	return token.AccessToken, error
-
 }
 
 func getRecentlyPlayed(accessToken string) (*models.RecentlyPlayedResponse, error) {
@@ -38,7 +37,7 @@ func persistData(data *models.RecentlyPlayedResponse, userId int) error {
 }
 
 func callLambda(id int) (string, error) {
-	tokens, err := getAccessToken(id)
+	tokens, err := getAccessToken()
 	if err != nil {
 		return "", err
 	}
